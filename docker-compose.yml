@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  backend:
+    image: "site-metrics-springboot"
+    ports:
+      - "5500:5500"
+    container_name: "gallant_kalam"
+
+  frontend:
+    image: "site-metrics-angular"
+    ports:
+      - "4200:80"
+    container_name: "unruffled_knuth"
+    depends_on:
+      - backend
