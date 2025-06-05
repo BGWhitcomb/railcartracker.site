@@ -1,15 +1,39 @@
-version: '3.8'
 services:
-  backend:
-    image: "site-metrics-springboot"
+  database:
+    image: mysql:8.0
+    container_name: railcar-mysql
+    environment:
+      MYSQL_DATABASE: railcar
+      MYSQL_ROOT_PASSWORD: Password1
     ports:
-      - "5500:5500"
-    container_name: "gallant_kalam"
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
+
+  backend:
+    build: ./site-metrics-springboot
+    container_name: railcar-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://database:3306/railcar
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Password1
 
   frontend:
-    image: "site-metrics-angular"
+    build: ./site-metrics-angular
+    container_name: railcar-frontend
     ports:
-      - "4200:80"
-    container_name: "unruffled_knuth"
+      - "4200:4200"
     depends_on:
       - backend
+
+volumes:
+  mysql_data:
