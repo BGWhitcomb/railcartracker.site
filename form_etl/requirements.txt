@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+PyMuPDF
+pdf2image
+paddlepaddle
+paddleocr
+pydantic
+python-multipart
+opencv-python-headless

@@ -3,8 +3,8 @@ services:
     image: mysql:8.0
     container_name: railcar-mysql
     environment:
-      MYSQL_DATABASE: railcar
-      MYSQL_ROOT_PASSWORD: Password1
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     ports:
       - "3307:3306"
     volumes:
@@ -23,12 +23,16 @@ services:
       database:
         condition: service_healthy
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://database:3306/railcar
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=Password1
+      - SPRING_DATASOURCE_URL=jdbc:mysql://database:3306/${MYSQL_DATABASE}
+      - SPRING_DATASOURCE_USERNAME=${MYSQL_USER}
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
 
   frontend:
-    build: ./site-metrics-angular
+    build:
+      context: ./site-metrics-angular
+      dockerfile: Dockerfile
+      args:
+        CONFIGURATION: tunnel
     container_name: railcar-frontend
     ports:
       - "4200:4200"
@@ -37,6 +41,40 @@ services:
     environment:
       - NODE_ENV=development
       - NG_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=2000
+      - API_URL=${API_URL}
+    volumes:
+      - ./site-metrics-angular:/app
+      - /app/node_modules
+    
+  etl:
+    build: ./form_etl
+    container_name: railcar-etl
+    ports:
+      - "8000:8000"
+    environment:
+      - LOCALAI_URL=${LOCALAI_URL}
+    volumes:
+      - ./form_etl/sample_pdf:/app/uploads
+    depends_on:
+      localai:
+        condition: service_healthy
+ 
+  localai:
+    image: localai/localai:latest
+    container_name: localai
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./models:/models:ro
+    environment:
+      - MODELS_PATH=/models
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/readyz"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
 
 volumes:
   mysql_data:
