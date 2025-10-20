@@ -1,0 +1,15 @@
+<!-- testing with stitch -->
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+
+<div style="padding: 2em;">
+  <app-toast-container></app-toast-container>
+  <app-nav-bar></app-nav-bar>
+  <app-loading [loading]="loading" message="Loading..."></app-loading>
+  <router-outlet></router-outlet>
+  <app-footer></app-footer>
+  <app-logout-dialog></app-logout-dialog>
+</div>
