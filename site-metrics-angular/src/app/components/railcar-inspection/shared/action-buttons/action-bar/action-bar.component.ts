@@ -10,8 +10,8 @@ import { RowEditingService } from '../../../data-grid/services/row-editing.servi
 export class ActionBarComponent {
 
 
-  @Input() selectedRows = new Set<number>();
-  @Input() queue: InspectionQueue = { new: [], modified: [] };
+  @Input() selectedRows: Set<number> | null = null;
+  @Input() queue: InspectionQueue | null = null;
 
   @Output() cancelAllEdits = new EventEmitter<void>();
   @Output() saveSelectedRows = new EventEmitter<void>();
@@ -31,5 +31,4 @@ export class ActionBarComponent {
   onSubmitInspections(): void {
     this.submitInspections.emit();
   }
-
 }

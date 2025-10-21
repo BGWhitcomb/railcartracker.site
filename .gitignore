@@ -1,1 +1,55 @@
+# -----------------------------------------------------
+# Global / System
+# -----------------------------------------------------
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
+*.swo
+*.bak
+
+# IDE / Editor
+.idea/
+.vscode/
+*.iml
+
+# Node / Angular
+site-metrics-angular/node_modules/
+site-metrics-angular/dist/
+site-metrics-angular/.angular/
+site-metrics-angular/.env.local
+site-metrics-angular/.env
+
+# Java / Spring Boot
+site-metrics-springboot/target/
+site-metrics-springboot/.classpath
+site-metrics-springboot/.project
+site-metrics-springboot/.settings/
+site-metrics-springboot/.env
+site-metrics-springboot/logs/
+site-metrics-springboot/*.log
+
+# Maven / Gradle caches
+.mvn/wrapper/maven-wrapper.jar
+.gradle/
+build/
+
+# Docker
+*.pid
+*.tar
+docker-compose.override.yml
 .env
+.env.*
+!example.env          # Keep a sample for others
+
+# Git / CI
+coverage/
+reports/
+.github/workflows/*.tmp
+.github/actions/cache/
+
+# OS / Misc
+*.bak
+*.orig
+*.rej

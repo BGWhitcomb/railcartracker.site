@@ -9,16 +9,16 @@
             (click)="onSaveSelectedRows()" title="Save all selected rows" [disabled]="!selectedRows"
             style="font-size: 1rem;">
             <i class="material-icons-outlined me-1">save</i>
-            Save Selected ({{ selectedRows.size }})
+            Save Selected ({{ selectedRows?.size }})
         </button>
         <button class="btn btn-sm btn-success rounded-pill d-flex align-items-center gap-1 hover-bg-success-dark"
-            (click)="onSubmitInspections()" [disabled]="(queue.new.length + queue.modified.length) === 0" title="Submit all queued changes"
+            (click)="onSubmitInspections()" [disabled]="((queue?.new?.length ?? 0) + (queue?.modified?.length ?? 0)) === 0" title="Submit all queued changes"
             style="font-size: 1rem;">
             <i class="material-icons-outlined me-1">cloud_upload</i>
-            Submit Changes ({{ queue.new.length + queue.modified.length }})
+            Submit Changes ({{ (queue?.new?.length || 0) + (queue?.modified?.length || 0) }})
         </button>
         <span class="badge bg-primary rounded-pill px-2 py-1 small">
-            {{ queue.new.length }} new, {{ queue.modified.length }} modified
+            {{ queue?.new?.length || 0 }} new, {{ queue?.modified?.length || 0 }} modified
         </span>
         <button class="btn btn-sm btn-danger rounded-pill d-flex align-items-center gap-1 hover-bg-danger-dark"
             title="Delete selected rows" (click)="onDeleteSelectedRows()" [disabled]="!selectedRows">

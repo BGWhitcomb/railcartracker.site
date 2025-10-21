@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { PaginationService } from '../services/pagination.service';
 import { BadOrderedRailcar } from '../../models/inspections';
 import { Observable } from 'rxjs';
+import { Pagination } from '../../models/pagination';
 
 @Component({
   selector: 'app-bad-order-table',
@@ -11,15 +12,11 @@ import { Observable } from 'rxjs';
 export class BadOrderTableComponent {
   // input data
   @Input() selectAll: boolean = false;
-  @Input() selectedRows: Set<number> = new Set();
-  @Input() badOrders: BadOrderedRailcar[] = [];
-  @Input() showingTo!: number;
-  @Input() showingFrom!: number;
-  @Input() page: number = 1;
-  @Input() totalPages: number = 1;
-  @Input() sortColumn: string = '';
-  @Input() sortDirection: 'asc' | 'desc' | '' = 'asc';
-  @Input() pagedData: BadOrderedRailcar[] = [];
+  @Input() selectedRows: Set<number> | null = null;
+
+  @Input() badOrders: BadOrderedRailcar[] | null = null;
+  @Input() pagedState: Pagination<BadOrderedRailcar> | null = null;
+  @Input() rowLoading: boolean = false;
 
   // output data
   @Output() handleRepairDateChange = new EventEmitter<any>();
@@ -31,14 +28,9 @@ export class BadOrderTableComponent {
   @Output() cancelEdit = new EventEmitter<number>();
   @Output() setSort = new EventEmitter<string>();
   @Output() setPage = new EventEmitter<number>();
-  loading = false;
   Math = Math;
 
   datePickerOpen: { [id: number]: boolean } = {};
-
-  constructor(
-  ) { }
-
 
   toggleDatePicker(row: BadOrderedRailcar): void {
     const id = row.badOrderId;
@@ -51,11 +43,11 @@ export class BadOrderTableComponent {
     return id != null ? !!this.datePickerOpen[id] : false;
   }
 
-closeDatePicker(row: BadOrderedRailcar): void {
-  const id = row.badOrderId;
-  if (id == null) return;
-  this.datePickerOpen[id] = false;
-}
+  closeDatePicker(row: BadOrderedRailcar): void {
+    const id = row.badOrderId;
+    if (id == null) return;
+    this.datePickerOpen[id] = false;
+  }
 
   onRepairDateChange(newDate: string, row: BadOrderedRailcar): void {
     this.handleRepairDateChange.emit({ newDate, row });
@@ -71,7 +63,7 @@ closeDatePicker(row: BadOrderedRailcar): void {
     this.toggleSelect.emit(rowId);
   }
   onToggleSelectAll() {
-    this.toggleSelectAll.emit(this.badOrders);
+    this.toggleSelectAll.emit(this.pagedState?.data || []);
   }
   onSaveIndividualRow(rowId: number) {
     this.saveIndividualRow.emit(rowId);

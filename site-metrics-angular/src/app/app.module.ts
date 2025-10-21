@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { AuthModule } from '@auth0/auth0-angular';
 
 import { AppComponent } from './app.component';
 import { RailcarFormComponent } from './components/railcar-inspection/railcar-form/railcar-form.component';
@@ -9,7 +10,7 @@ import { HomeComponent } from './components/home/home.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppRoutingModule } from '../app-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgChartsModule } from 'ng2-charts';
 import { InspectionTableComponent } from './components/railcar-inspection/data-grid/inspection-table/inspection-table.component';
 import { FilterComponent } from './components/railcar-inspection/data-grid/filter/filter.component';
@@ -22,6 +23,11 @@ import { LogoutDialogComponent } from './shared/core/logout-dialog/logout-dialog
 import { FooterComponent } from './shared/core/footer/footer.component';
 import { LoadingComponent } from './shared/core/loading/loading.component';
 import { ActionBarComponent } from './components/railcar-inspection/shared/action-buttons/action-bar/action-bar.component';
+import { AuthInterceptor } from './auth/interceptors/auth.interceptor';
+import { CallbackComponent } from './auth/callback/callback.component';
+import { environment } from 'src/environments/environment';
+import { LoadingInterceptor } from './interceptors/loading.interceptor';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -40,18 +46,46 @@ import { ActionBarComponent } from './components/railcar-inspection/shared/actio
     LogoutDialogComponent,
     FooterComponent,
     LoadingComponent,
-    ActionBarComponent
+    ActionBarComponent,
+    CallbackComponent
   ],
+
   imports: [
+    MatDialogModule,
     BrowserModule,
     NgbModule,
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    NgChartsModule
+    NgChartsModule,
+    AuthModule.forRoot({
+      domain: environment.auth.domain,
+      clientId: environment.auth.clientId,
+      useRefreshTokens: true,
+      // cacheLocation: 'localstorage', // Use local storage for testing purposes
+      cacheLocation: 'memory', // Use memory for production
+      authorizationParams: {
+        redirect_uri: environment.auth.redirectUri,
+        logoutUrl: environment.auth.logoutUrl,
+        audience: environment.auth.audience,
+        returnTo: environment.auth.returnTo,
+        scope: 'openid profile email'
+      }
+    }),
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: LoadingInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
