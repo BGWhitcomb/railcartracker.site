@@ -1,9 +1,11 @@
 name: "Review on Push"
+
 permissions:
   contents: read
   security-events: write
   pull-requests: write
   issues: write
+
 on:
   push:
     paths:
@@ -23,30 +25,44 @@ concurrency:
   group: review-checks-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  lint:
+  # -------------------------------------------------------------
+  #  Angular Lint
+  # -------------------------------------------------------------
+  lint-angular:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site-metrics-angular
     steps:
       - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-      - name: Run Super-Linter
-        uses: super-linter/super-linter@v8
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEFAULT_BRANCH: main
 
-  security-scan:
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install and Lint Angular
+        run: |
+          npm ci
+          npm run lint
+
+  # -------------------------------------------------------------
+  #  Spring Boot Lint / Verify
+  # -------------------------------------------------------------
+  lint-springboot:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site-metrics-springboot
     steps:
       - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: 17
 
       - name: Cache Maven packages
         uses: actions/cache@v4
@@ -57,31 +73,41 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Ensure mvnw executable
-        run: chmod +x site-metrics-springboot/mvnw || true
+        run: chmod +x mvnw
 
-      - name: Build (backend) - Maven
-        working-directory: site-metrics-springboot
-        run: |
-          ./mvnw -B clean verify -DskipTests=true
+      - name: Maven Lint / Verify
+        run: ./mvnw -B clean verify -DskipTests
+
+  # -------------------------------------------------------------
+  #  Security Scan (CodeQL + Multi-Language)
+  # -------------------------------------------------------------
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: [lint-angular, lint-springboot] # run after linting succeeds
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
-
-      - name: Build (frontend) - npm
-        working-directory: site-metrics-angular
-        run: |
-          npm ci
-          npm run build --if-present
+          node-version: 18
+          cache: npm
+          cache-dependency-path: site-metrics-angular/package-lock.json
 
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      - name: Install Python deps (form_etl)
+      - name: Install Python dependencies
         working-directory: form_etl
         run: |
           python -m pip install --upgrade pip

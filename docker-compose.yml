@@ -26,6 +26,8 @@ services:
       - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
       - SPRING_DATASOURCE_USERNAME=${MYSQL_USER}
       - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
+      - AUTH0_DOMAIN=${AUTH0_DOMAIN}
+      - AUTH0_AUDIENCE=${AUTH0_AUDIENCE}
 
   frontend:
     build:
@@ -65,7 +67,7 @@ services:
     image: localai/localai:latest
     container_name: localai
     ports:
-      - "8081:8080"
+      - "8081:8000"
     volumes:
       - ./models:/models:ro
     environment:
