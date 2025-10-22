@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, EMPTY, finalize, forkJoin, map, of } from 'rxjs';
+import { BehaviorSubject, Observable, EMPTY, finalize, map, of } from 'rxjs';
 import { InboundRailcar, BadOrderedRailcar } from '../../models/inspections';
 import { InspectionQueue, BadOrderQueue } from '../../models/inspection-queue';
 import { ToastService } from 'src/app/services/toast.service';

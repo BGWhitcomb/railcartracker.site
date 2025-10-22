@@ -46,7 +46,7 @@ jobs:
       - name: Install and Lint Angular
         run: |
           npm ci
-          npm run lint
+          npx ng lint
 
   # -------------------------------------------------------------
   #  Spring Boot Lint / Verify
