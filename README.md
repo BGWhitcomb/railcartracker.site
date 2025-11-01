@@ -2,7 +2,7 @@
 
 ![Review Checks](https://github.com/BGWhitcomb/railcartracker.site/actions/workflows/review-checks.yml/badge.svg)
 
-# RailcarTracker Site (mono-repo)
+# RailcarTracker Site
 
 Services:
 - site-metrics-springboot — Spring Boot backend (Java)
