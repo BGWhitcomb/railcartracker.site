@@ -33,11 +33,12 @@ services:
     build:
       context: ./site-metrics-angular
       dockerfile: Dockerfile
+      target: ${FRONTEND_TARGET:-dev}  # switch build target dynamically
       args:
-        CONFIGURATION: tunnel
+        CONFIGURATION: ${CONFIGURATION:-development}
     container_name: railcar-frontend
     ports:
-      - "4200:4200"
+      - "${FRONTEND_PORT:-4200}:${FRONTEND_PORT:-4200}"
     depends_on:
       - backend
     environment:
@@ -49,27 +50,45 @@ services:
     volumes:
       - ./site-metrics-angular:/app
       - /app/node_modules
-    
+    profiles:
+      - dev
+
+  frontend-prod:
+    build:
+      context: ./site-metrics-angular
+      dockerfile: Dockerfile
+      target: prod
+      args:
+        CONFIGURATION: production
+    container_name: railcar-frontend-prod
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    profiles:
+      - prod
+
   etl:
     build: ./form_etl
     container_name: railcar-etl
     ports:
       - "8000:8000"
     environment:
-      - LOCALAI_URL=${LOCALAI_URL}
+      - LOCALAI_URL=http://localai:8080/v1/chat/completions
+      - HF_API_KEY=${HF_API_KEY}
     volumes:
       - ./form_etl/sample_pdf:/app/uploads
     depends_on:
       localai:
         condition: service_healthy
- 
+
   localai:
     image: localai/localai:latest
     container_name: localai
     ports:
-      - "8081:8000"
+      - "8081:8080"
     volumes:
-      - ./models:/models:ro
+      - ./models/command-r7b:/models:ro
     environment:
       - MODELS_PATH=/models
     healthcheck:

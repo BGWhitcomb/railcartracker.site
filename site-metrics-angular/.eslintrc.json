@@ -11,7 +11,7 @@
             "parser": "@typescript-eslint/parser",
             "parserOptions": {
                 "project": [
-                    "./tsconfig.json"
+                    "./site-metrics-angular/tsconfig.json"
                 ],
                 "createDefaultProgram": true
             },
@@ -23,6 +23,7 @@
             ],
             // change later
             "rules": {
+                "@typescript-eslint/no-inferrable-types": "off",
                 "@typescript-eslint/explicit-function-return-type": "off",
                 "@typescript-eslint/no-explicit-any": "off",
                 "@typescript-eslint/no-unused-vars": "off",

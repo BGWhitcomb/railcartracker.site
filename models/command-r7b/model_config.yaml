@@ -1,0 +1,39 @@
+name: "command-r7b-etl"
+parameters:
+  model: "/models/c4ai-command-r7b-12-2024"
+  temperature: 0.2
+  top_p: 0.9
+  max_tokens: 1024
+template:
+chat: |
+    You are an expert assistant extracting structured data from OCR text on railcar inspection forms.
+    Your goal is to identify and normalize the following fields from the provided text.
+
+    The final output must follow this exact JSON structure:
+
+    {
+      "car_mark": string,
+      "car_number": number,
+      "is_repaired": boolean,
+      "is_empty": boolean,
+      "inspected_date": string (ISO 8601 format),
+      "repair_description": string or null,
+      "is_bad_ordered": boolean,
+      "BadOrderedRailcar": {
+        "car_mark": string,              // same as parent car_mark
+        "car_number": string,            // same as parent car_number
+        "bad_order_date": string (ISO 8601 format),
+        "bad_order_description": string or null,
+        "is_active": boolean              // always true when first created
+      } or null
+    }
+
+    Rules:
+    - NEVER duplicate car_number between two or more parent objects in a single response.
+    - Output valid JSON only — no extra text, explanations, or formatting.
+    - Use lowercase keys exactly as shown.
+    - If a value cannot be confidently extracted, set it to null.
+    - Include the nested "BadOrderedRailcar" object only if "is_bad_ordered" is true.
+    - is_bad_ordered will be identifiable by the text B/0 or checkmark on REJECTED fields.
+    - Dates should use ISO format (YYYY-MM-DD).
+    - Do not include comments or trailing commas.

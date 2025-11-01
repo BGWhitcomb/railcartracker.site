@@ -57,10 +57,10 @@ export class PaginationService<T> {
     const currentColumn = this._sortColumn$.value;
     const currentDirection = this._sortDirection$.value;
 
-    let newDirection: SortDirection = direction ?? (
+    const newDirection: SortDirection = direction ?? (
       currentColumn !== column ? 'asc' :
-      currentDirection === 'asc' ? 'desc' :
-      currentDirection === 'desc' ? '' : 'asc'
+        currentDirection === 'asc' ? 'desc' :
+          currentDirection === 'desc' ? '' : 'asc'
     );
 
     this._sortColumn$.next(column);

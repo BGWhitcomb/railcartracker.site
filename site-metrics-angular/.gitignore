@@ -1,5 +1,6 @@
 # Angular environment files
 src/environments/*
+!src/environments/environment.example.ts
 
 # Compiled output
 /build/

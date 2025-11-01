@@ -16,14 +16,25 @@ Quick start (recommended — Docker Compose)
 docker-compose up --build
 ```
 
+Quick start individual containers
+```bash
+# from repo root
+docker-compose up --build frontend
+docker-compose up --build backend
+docker-compose up --build etl
+docker-compose up --build localai
+docker-compose up --build mysql
+```
+
 Run services individually
 - Backend: see site-metrics-springboot/README.md
 - Frontend: see site-metrics-angular/README.md
 - ETL: see form_etl/README.md
 
 Environment
-- Docker Compose loads .env in repo root. Use environment variables for secrets.
+- Docker Compose loads .env in repo root. Use environment variables for secrets. See .env example in directory
 - In Spring Boot, application.properties should reference env vars: e.g. my.app.key=${MY_APP_KEY:default}
+- In Angular, `src/environments/environment.ts, environment.prod.ts, and environment.tunnel.ts. See example in directory.
 
 Useful commands (Windows)
 - Backend build: cd site-metrics-springboot && mvnw.cmd package -DskipTests

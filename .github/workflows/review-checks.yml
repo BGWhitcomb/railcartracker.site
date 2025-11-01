@@ -43,10 +43,11 @@ jobs:
           cache: npm
           cache-dependency-path: site-metrics-angular/package-lock.json
 
-      - name: Install and Lint Angular
-        run: |
-          npm ci
-          npx ng lint
+      - name: Install Angular
+        run: npm ci
+        
+      - name: Lint Angular
+        run: npx ng lint
 
   # -------------------------------------------------------------
   #  Spring Boot Lint / Verify

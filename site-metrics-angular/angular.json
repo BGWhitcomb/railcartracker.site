@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/railcar-tracker",
+            "outputPath": "dist/site-metrics-angular",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
