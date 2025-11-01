@@ -85,7 +85,7 @@ jobs:
   # -------------------------------------------------------------
   security-scan:
     runs-on: ubuntu-latest
-    needs: [lint-angular, lint-springboot] # run after linting succeeds
+    needs: [lint-springboot] # run after linting succeeds
     steps:
       - uses: actions/checkout@v5
         with:
